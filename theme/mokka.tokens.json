@@ -1,0 +1,81 @@
+{
+  "$description": "Mokka design tokens (W3C Design Tokens format). Mirrors the Figma variable collection 'Mokka theme' and the text styles 'Mokka/...'.",
+  "color": {
+    "$type": "color",
+    "background": { "$value": "#FAF7F2", "$description": "Crème, app background" },
+    "foreground": { "$value": "#2B1D14", "$description": "Espresso, default text" },
+    "card": { "$value": "#FFFFFF" },
+    "card-foreground": { "$value": "#2B1D14" },
+    "popover": { "$value": "#FFFFFF" },
+    "popover-foreground": { "$value": "#2B1D14" },
+    "primary": { "$value": "#6F4E37", "$description": "Coffee brown, main buttons and active tab" },
+    "primary-foreground": { "$value": "#FFFFFF" },
+    "secondary": { "$value": "#EADFD3", "$description": "Latte, secondary buttons and chips" },
+    "secondary-foreground": { "$value": "#2B1D14" },
+    "muted": { "$value": "#F3EEE8", "$description": "Soft surfaces, search field" },
+    "muted-foreground": { "$value": "#6B5B4F", "$description": "Descriptions, metadata" },
+    "accent": { "$value": "#E8A35F", "$description": "Caramel, badges" },
+    "accent-foreground": { "$value": "#2B1D14" },
+    "destructive": { "$value": "#B42318" },
+    "destructive-foreground": { "$value": "#FFFFFF" },
+    "border": { "$value": "#E5DCD1" },
+    "input": { "$value": "#998677", "$description": "Form field border, 3.26:1 on background (WCAG 1.4.11)" },
+    "ring": { "$value": "#6F4E37" },
+    "feedback": {
+      "success": {
+        "base": { "$value": "#2F7A3E" },
+        "foreground": { "$value": "#FFFFFF" },
+        "subtle": { "$value": "#E8F3E6" },
+        "border": { "$value": "#B6D8AE" },
+        "text": { "$value": "#1E5128" }
+      },
+      "warning": {
+        "base": { "$value": "#B45309" },
+        "foreground": { "$value": "#FFFFFF" },
+        "subtle": { "$value": "#FDF0DC" },
+        "border": { "$value": "#F0C98E" },
+        "text": { "$value": "#7A3A06" }
+      },
+      "error": {
+        "base": { "$value": "#B42318" },
+        "foreground": { "$value": "#FFFFFF" },
+        "subtle": { "$value": "#FDECEA" },
+        "border": { "$value": "#F2B8B2" },
+        "text": { "$value": "#8A1A12" }
+      },
+      "info": {
+        "base": { "$value": "#2B5F99" },
+        "foreground": { "$value": "#FFFFFF" },
+        "subtle": { "$value": "#E7EFF8" },
+        "border": { "$value": "#B5CBE6" },
+        "text": { "$value": "#1D4877" }
+      }
+    }
+  },
+  "radius": {
+    "$type": "dimension",
+    "default": { "$value": "12px", "$description": "Cards, buttons, inputs" },
+    "thumbnail": { "$value": "8px" },
+    "full": { "$value": "9999px", "$description": "Chips, badges, avatars" }
+  },
+  "spacing": {
+    "$type": "dimension",
+    "$description": "4px grid",
+    "1": { "$value": "4px" },
+    "2": { "$value": "8px" },
+    "3": { "$value": "12px" },
+    "4": { "$value": "16px" },
+    "6": { "$value": "24px" },
+    "8": { "$value": "32px" }
+  },
+  "typography": {
+    "$type": "typography",
+    "hero":        { "$value": { "fontFamily": "Fraunces", "fontWeight": 600, "fontSize": "44px", "lineHeight": "50px", "letterSpacing": "-1%" } },
+    "display":     { "$value": { "fontFamily": "Fraunces", "fontWeight": 600, "fontSize": "32px", "lineHeight": "40px" } },
+    "title":       { "$value": { "fontFamily": "Inter", "fontWeight": 600, "fontSize": "20px", "lineHeight": "28px" } },
+    "body":        { "$value": { "fontFamily": "Inter", "fontWeight": 400, "fontSize": "16px", "lineHeight": "24px" } },
+    "body-strong": { "$value": { "fontFamily": "Inter", "fontWeight": 600, "fontSize": "16px", "lineHeight": "24px" } },
+    "small":       { "$value": { "fontFamily": "Inter", "fontWeight": 500, "fontSize": "14px", "lineHeight": "20px" } },
+    "caption":     { "$value": { "fontFamily": "Inter", "fontWeight": 400, "fontSize": "12px", "lineHeight": "16px" } }
+  }
+}

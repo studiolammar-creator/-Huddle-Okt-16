@@ -1,0 +1,140 @@
+/*
+ * Mokka theme for shadcn/ui (Tailwind CSS v4)
+ * Source of truth: Figma file "Project Design File", variable collection "Mokka theme".
+ * Token names match shadcn/ui so design, prompt and code use the same words.
+ *
+ * Usage: import this file in app/globals.css after `@import "tailwindcss";`
+ * (see README.md). Light mode only: the Mokka style guide defines no dark theme yet.
+ */
+
+:root {
+  /* Base surfaces */
+  --background: #faf7f2;            /* Crème, app background */
+  --foreground: #2b1d14;            /* Espresso, default text (15.3:1 on background) */
+  --card: #ffffff;                  /* Product cards (16.3:1 with foreground) */
+  --card-foreground: #2b1d14;
+  --popover: #ffffff;
+  --popover-foreground: #2b1d14;
+
+  /* Actions */
+  --primary: #6f4e37;               /* Coffee brown, main buttons and active tab (7.4:1 with white) */
+  --primary-foreground: #ffffff;
+  --secondary: #eadfd3;             /* Latte, secondary buttons and chips (12.4:1 with foreground) */
+  --secondary-foreground: #2b1d14;
+  --muted: #f3eee8;                 /* Soft surfaces, search field */
+  --muted-foreground: #6b5b4f;      /* Descriptions, metadata (5.6:1 on muted) */
+  --accent: #e8a35f;                /* Caramel, badges such as "Nieuw" (7.6:1 with foreground) */
+  --accent-foreground: #2b1d14;
+  --destructive: #b42318;           /* Errors, delete (6.6:1 with white) */
+  --destructive-foreground: #ffffff;
+
+  /* Lines and focus */
+  --border: #e5dcd1;                /* Decorative dividers and card borders */
+  --input: #998677;                 /* Form field borders: 3.26:1 on background (WCAG 1.4.11).
+                                       Darker than the style guide's #E5DCD1 after the accessibility audit. */
+  --ring: #6f4e37;                  /* Focus ring */
+
+  /* Feedback colours (extension of the style guide, AA-checked) */
+  --success: #2f7a3e;               /* 5.3:1 with white */
+  --success-foreground: #ffffff;
+  --success-subtle: #e8f3e6;
+  --success-border: #b6d8ae;
+  --success-text: #1e5128;          /* 8.1:1 on success-subtle */
+
+  --warning: #b45309;               /* 5.0:1 with white */
+  --warning-foreground: #ffffff;
+  --warning-subtle: #fdf0dc;
+  --warning-border: #f0c98e;
+  --warning-text: #7a3a06;          /* 7.7:1 on warning-subtle */
+
+  --error: #b42318;                 /* Same as destructive, 6.6:1 with white */
+  --error-foreground: #ffffff;
+  --error-subtle: #fdecea;
+  --error-border: #f2b8b2;
+  --error-text: #8a1a12;            /* 8.2:1 on error-subtle */
+
+  --info: #2b5f99;                  /* 6.6:1 with white */
+  --info-foreground: #ffffff;
+  --info-subtle: #e7eff8;
+  --info-border: #b5cbe6;
+  --info-text: #1d4877;             /* 8.1:1 on info-subtle */
+
+  /* Shape */
+  --radius: 0.75rem;                /* 12px for cards, buttons and inputs; chips and badges use rounded-full */
+
+  /* Typography */
+  --font-display: "Fraunces", ui-serif, Georgia, serif;
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Map the variables to Tailwind v4 utilities: bg-primary, text-muted-foreground, bg-success-subtle, rounded-lg ... */
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-success-subtle: var(--success-subtle);
+  --color-success-border: var(--success-border);
+  --color-success-text: var(--success-text);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-warning-subtle: var(--warning-subtle);
+  --color-warning-border: var(--warning-border);
+  --color-warning-text: var(--warning-text);
+  --color-error: var(--error);
+  --color-error-foreground: var(--error-foreground);
+  --color-error-subtle: var(--error-subtle);
+  --color-error-border: var(--error-border);
+  --color-error-text: var(--error-text);
+  --color-info: var(--info);
+  --color-info-foreground: var(--info-foreground);
+  --color-info-subtle: var(--info-subtle);
+  --color-info-border: var(--info-border);
+  --color-info-text: var(--info-text);
+
+  --radius-sm: calc(var(--radius) - 4px);   /* 8px: thumbnails */
+  --radius-md: calc(var(--radius) - 2px);   /* 10px */
+  --radius-lg: var(--radius);               /* 12px: cards, buttons, inputs */
+  --radius-xl: calc(var(--radius) + 4px);   /* 16px */
+
+  --font-display: var(--font-display);
+  --font-sans: var(--font-sans);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground font-sans;
+  }
+}
+
+/* Mokka type scale (font-size / line-height), matching the Figma text styles "Mokka/..." */
+@layer components {
+  .text-hero    { font-family: var(--font-display); font-weight: 600; font-size: 2.75rem; line-height: 3.125rem; letter-spacing: -0.01em; } /* 44/50, homepage and login hero */
+  .text-display { font-family: var(--font-display); font-weight: 600; font-size: 2rem;    line-height: 2.5rem; }   /* 32/40, page titles, greeting */
+  .text-title   { font-family: var(--font-sans);    font-weight: 600; font-size: 1.25rem; line-height: 1.75rem; }  /* 20/28, section headings */
+  .text-body    { font-family: var(--font-sans);    font-weight: 400; font-size: 1rem;    line-height: 1.5rem; }   /* 16/24, running text */
+  .text-body-strong { font-family: var(--font-sans); font-weight: 600; font-size: 1rem;   line-height: 1.5rem; }   /* 16/24, product names */
+  .text-small   { font-family: var(--font-sans);    font-weight: 500; font-size: 0.875rem; line-height: 1.25rem; } /* 14/20, prices, buttons, labels */
+  .text-caption { font-family: var(--font-sans);    font-weight: 400; font-size: 0.75rem; line-height: 1rem; }    /* 12/16, metadata */
+}
