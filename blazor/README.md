@@ -20,6 +20,8 @@ Vercel kan geen .NET bouwen, dus de GitHub Action `.github/workflows/deploy-verc
 
 Nodig: een repository-secret `VERCEL_TOKEN` (GitHub → Settings → Secrets and variables → Actions). `vercel.json` in de root zet de eigen Git-builds van Vercel uit, want die leveren alleen een 404 op.
 
+Handmatig opnieuw deployen zonder commit: GitHub → Actions → "Deploy Mokka to Vercel" → Run workflow.
+
 Lokaal de statische build testen:
 
 ```bash
