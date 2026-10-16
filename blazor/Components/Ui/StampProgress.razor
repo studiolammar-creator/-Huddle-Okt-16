@@ -1,0 +1,30 @@
+@* Figma: "Stempelkaart". Loyalty progress: every 10th coffee is free. *@
+<div class="flex items-center gap-4 rounded-lg bg-secondary p-4">
+    <span class="flex size-11 shrink-0 items-center justify-center rounded-full bg-accent text-accent-foreground">
+        <Icon Name="gift" Size="22" />
+    </span>
+
+    <div class="flex min-w-0 flex-1 flex-col gap-2">
+        <p class="text-small text-secondary-foreground">@Message</p>
+        <div class="flex gap-1" role="img" aria-label="@($"{Stamps} van {Total} stempels")">
+            @for (var i = 0; i < Total; i++)
+            {
+                <span class="h-2 flex-1 rounded-full @(i < Stamps ? "bg-primary" : "border border-muted-foreground bg-background")"></span>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter] public int Stamps { get; set; }
+    [Parameter] public int Total { get; set; } = 10;
+
+    private int Remaining => Math.Max(0, Total - Stamps);
+
+    private string Message => Remaining switch
+    {
+        0 => "Je volgende koffie is gratis",
+        1 => "Nog 1 kop tot een gratis koffie",
+        var n => $"Nog {n} koppen tot een gratis koffie"
+    };
+}

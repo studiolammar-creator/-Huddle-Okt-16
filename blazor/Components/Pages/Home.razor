@@ -1,0 +1,139 @@
+@page "/"
+@rendermode InteractiveServer
+
+@*
+    Mokka / Home
+    Figma: Huddle 16 Oktober, page "Iteration - V1.1.0", node 3068:72
+    https://www.figma.com/design/zz9z4kvYU3iwp0aUeqbSlr/Huddle-16-Oktober-de-AI-Relay?node-id=3068-72
+*@
+
+<PageTitle>Mokka</PageTitle>
+
+<main class="flex flex-col gap-6 pt-14 pb-32">
+
+    @* Header: pickup location, profile and greeting *@
+    <header class="flex flex-col gap-2 px-4">
+        <div class="flex items-center justify-between">
+            <button type="button"
+                    aria-label="@($"Afhaallocatie wijzigen, nu {StoreName}")"
+                    class="flex h-11 items-center gap-2 rounded-lg px-4 text-small text-foreground transition-colors hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring">
+                <Icon Name="map-pinned" />
+                <span>@StoreName</span>
+                <Icon Name="chevron-down" />
+            </button>
+
+            <a href="profiel" aria-label="@($"Profiel van {CustomerName}")"
+               class="flex size-11 items-center justify-center rounded-full bg-accent text-body-strong text-accent-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring">
+                @CustomerName[0]
+            </a>
+        </div>
+
+        <h1 class="text-display text-foreground">@Greeting, @(CustomerName).</h1>
+        <p class="text-body text-muted-foreground">
+            Je @Favourite.Product.Name.ToLowerInvariant() van gisteren staat al klaar om te bestellen.
+        </p>
+    </header>
+
+    @* Je vaste: one-tap reorder *@
+    <section aria-labelledby="vaste-titel" class="px-4">
+        <article class="flex flex-col overflow-hidden rounded-xl bg-primary text-primary-foreground shadow-[0_8px_24px_rgb(110_79_56/0.18)]">
+            <img src="@Favourite.Product.Image" alt="@Favourite.Product.Name" width="358" height="200"
+                 class="h-50 w-full object-cover" />
+
+            <div class="flex flex-col gap-4 px-5 pt-4 pb-5">
+                <div class="flex items-end gap-3">
+                    <div class="flex min-w-0 flex-1 flex-col gap-0.5">
+                        <p class="text-caption opacity-80">Je vaste</p>
+                        <h2 id="vaste-titel" class="text-display">@Favourite.Product.Name</h2>
+                        <p class="text-small opacity-80">@Favourite.Options</p>
+                    </div>
+                    <p class="text-title whitespace-nowrap">@Format.Euro(Favourite.Product.Price)</p>
+                </div>
+
+                <button type="button"
+                        class="flex h-11 w-full items-center justify-center gap-2 rounded-lg bg-secondary px-6 text-small text-secondary-foreground transition-[background-color,transform] duration-150 hover:bg-secondary/85 active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary"
+                        @onclick="() => Add(Favourite.Product)">
+                    <Icon Name="repeat" />
+                    Bestel opnieuw
+                </button>
+            </div>
+        </article>
+    </section>
+
+    @* Stempelkaart *@
+    <section aria-label="Stempelkaart" class="px-4">
+        <StampProgress Stamps="Stamps" Total="10" />
+    </section>
+
+    @* Iets anders? horizontal product rail *@
+    <section aria-labelledby="anders-titel" class="flex flex-col gap-3">
+        <div class="flex items-center justify-between px-4">
+            <h2 id="anders-titel" class="text-title text-foreground">Iets anders?</h2>
+            <a href="menu"
+               class="flex h-11 items-center rounded-lg px-4 text-small text-primary transition-colors hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring">
+                Volledig menu
+            </a>
+        </div>
+
+        <ul class="no-scrollbar flex snap-x snap-mandatory scroll-px-4 gap-3 overflow-x-auto px-4 pb-2">
+            @foreach (var product in Suggestions)
+            {
+                <li class="shrink-0 snap-start">
+                    <ProductTile Product="product" OnAdd="Add" />
+                </li>
+            }
+        </ul>
+    </section>
+
+    @* Zaakstatus *@
+    <section aria-label="Status van de zaak" class="px-4">
+        <div class="flex items-center gap-3 rounded-lg border border-info-border bg-info-subtle px-4 py-3 text-info-text">
+            <Icon Name="clock" Size="20" Class="text-info" />
+            <div class="flex min-w-0 flex-1 flex-col gap-0.5">
+                <p class="text-small">Open tot @Status.OpenUntil</p>
+                <p class="text-caption">@Status.Message</p>
+            </div>
+        </div>
+    </section>
+
+    @* Screen reader feedback after adding a product *@
+    <p class="sr-only" role="status" aria-live="polite">@_announcement</p>
+</main>
+
+<Tabbalk Active="home" />
+
+@code {
+    // Sample data matching the Figma design. Replace with a service during the workshop.
+    private const string CustomerName = "Erhan";
+    private const string StoreName = "Mokka Groenplaats";
+    private const int Stamps = 7;
+
+    private static readonly FavouriteOrder Favourite =
+        new(new Product("Cappuccino", 3.40m, "img/cappuccino.png"), "Medium, gewone melk");
+
+    private static readonly Product[] Suggestions =
+    [
+        new("Flat white", 3.60m, "img/flat-white.png"),
+        new("Cold brew", 3.90m, "img/cold-brew.png", Badge: "Nieuw"),
+        new("Chai latte", 3.80m, "img/chai-latte.png"),
+    ];
+
+    private static readonly StoreStatus Status =
+        new("18:00", "Rustig aan de toog. Je kop is klaar in ongeveer 5 minuten.");
+
+    private readonly List<Product> _order = [];
+    private string _announcement = "";
+
+    private static string Greeting => DateTime.Now.Hour switch
+    {
+        < 12 => "Goeiemorgen",
+        < 18 => "Goeiemiddag",
+        _ => "Goeienavond"
+    };
+
+    private void Add(Product product)
+    {
+        _order.Add(product);
+        _announcement = $"{product.Name} toegevoegd aan je bestelling. {_order.Count} in totaal.";
+    }
+}

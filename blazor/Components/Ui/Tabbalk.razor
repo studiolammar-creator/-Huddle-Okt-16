@@ -1,0 +1,33 @@
+@* Figma: component "Tabbalk" (variants Actief=Home/Menu/Bestellingen/Profiel). Fixed to the bottom of top-level screens. *@
+<nav aria-label="Hoofdnavigatie"
+     class="fixed inset-x-0 bottom-0 z-10 mx-auto w-full max-w-[390px] border-t border-border bg-background px-2 pt-2 pb-[max(16px,env(safe-area-inset-bottom))]">
+    <ul class="flex">
+        @foreach (var tab in Tabs)
+        {
+            var active = tab.Key == Active;
+            <li class="flex-1">
+                <a href="@tab.Href"
+                   aria-current="@(active ? "page" : null)"
+                   class="flex flex-col items-center gap-1 rounded-lg py-1.5 text-caption focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring @(active ? "bg-secondary font-semibold text-foreground" : "text-muted-foreground hover:text-foreground")">
+                    <Icon Name="@tab.Icon" Size="24" />
+                    @tab.Label
+                </a>
+            </li>
+        }
+    </ul>
+</nav>
+
+@code {
+    /// <summary>Key of the active tab: "home", "menu", "bestellingen" or "profiel".</summary>
+    [Parameter] public string Active { get; set; } = "home";
+
+    private sealed record Tab(string Key, string Label, string Icon, string Href);
+
+    private static readonly Tab[] Tabs =
+    [
+        new("home", "Home", "house", ""),
+        new("menu", "Menu", "coffee", "menu"),
+        new("bestellingen", "Bestellingen", "receipt-text", "bestellingen"),
+        new("profiel", "Profiel", "user", "profiel"),
+    ];
+}

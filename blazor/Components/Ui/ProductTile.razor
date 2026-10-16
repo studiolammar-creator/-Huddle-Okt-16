@@ -1,0 +1,33 @@
+@* Figma: "Tegel / ..." in the "Iets anders?" rail. 152 px wide, photo 152 × 120. *@
+<article class="flex w-38 flex-col overflow-hidden rounded-lg border border-border bg-card">
+    <div class="relative h-30 w-full">
+        <img src="@Product.Image" alt="@Product.Name" width="152" height="120" loading="lazy"
+             class="size-full object-cover" />
+        @if (Product.Badge is not null)
+        {
+            <span class="absolute left-2 top-2 rounded-full bg-accent px-2 py-0.5 text-caption text-accent-foreground">
+                @Product.Badge
+            </span>
+        }
+    </div>
+
+    <div class="flex items-center gap-2 py-2 pl-3 pr-2">
+        <div class="min-w-0 flex-1">
+            <h3 class="text-small truncate text-card-foreground">@Product.Name</h3>
+            <p class="text-caption text-muted-foreground">@Format.Euro(Product.Price)</p>
+        </div>
+        <button type="button"
+                aria-label="@($"{Product.Name} toevoegen aan je bestelling")"
+                class="flex size-11 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground transition-[background-color,transform] duration-150 hover:bg-primary/90 active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+                @onclick="() => OnAdd.InvokeAsync(Product)">
+            <Icon Name="plus" Size="18" />
+        </button>
+    </div>
+</article>
+
+@code {
+    [Parameter, EditorRequired] public Product Product { get; set; } = default!;
+
+    /// <summary>Raised when the customer taps the + button.</summary>
+    [Parameter] public EventCallback<Product> OnAdd { get; set; }
+}

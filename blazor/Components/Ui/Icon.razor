@@ -1,0 +1,19 @@
+@*
+    Mokka icon. Renders an SVG from wwwroot/icons as a CSS mask, so the icon
+    takes the current text colour (text-primary-foreground, text-info ...).
+    The SVGs are exported 1:1 from Figma (Lucide set from the shadcn kit).
+*@
+<span aria-hidden="true"
+      class="inline-block shrink-0 bg-current @Class"
+      style="width:@(Size)px;height:@(Size)px;-webkit-mask:url('icons/@(Name).svg') center / contain no-repeat;mask:url('icons/@(Name).svg') center / contain no-repeat;"></span>
+
+@code {
+    /// <summary>File name in wwwroot/icons without extension, for example "plus".</summary>
+    [Parameter, EditorRequired] public string Name { get; set; } = "";
+
+    /// <summary>Rendered size in px (16, 18, 20, 22 or 24 in the design).</summary>
+    [Parameter] public int Size { get; set; } = 16;
+
+    /// <summary>Extra classes, typically a text colour.</summary>
+    [Parameter] public string? Class { get; set; }
+}

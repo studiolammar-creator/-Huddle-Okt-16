@@ -1,0 +1,21 @@
+@import "tailwindcss";
+
+/* Mokka theme: shadcn tokens, feedback colours, radius, fonts and type scale. Shared with the rest of the repo. */
+@import "../../theme/mokka.css";
+
+/* Tailwind scans the Razor components for class names. */
+@source "../Components";
+
+/* Fraunces as rendered in Figma (soft 0, wonk 1). */
+.text-display,
+.text-hero {
+  font-variation-settings: "SOFT" 0, "WONK" 1;
+}
+
+/* Horizontal product rail without a visible scrollbar. */
+.no-scrollbar {
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}

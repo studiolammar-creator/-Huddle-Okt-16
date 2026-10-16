@@ -9,6 +9,7 @@ Deze repo bevat voorlopig alleen het **thema**. De app zelf bouwen we tijdens de
 |---|---|
 | `theme/mokka.css` | shadcn/ui-tokens als CSS-variabelen, feedbackkleuren, radius, fonts en de Mokka-typeschaal, gekoppeld aan Tailwind v4 via `@theme inline` |
 | `theme/mokka.tokens.json` | Dezelfde waarden in het W3C Design Tokens-formaat (voor Figma of Style Dictionary) |
+| `blazor/` | Het homescreen als Blazor-app met Tailwind v4, gebouwd op dit thema (zie `blazor/README.md`) |
 
 De tokennamen zijn dezelfde als in Figma (collectie **Mokka theme**) en in de shadcn-componenten:
 `background`, `foreground`, `primary`, `secondary`, `muted`, `accent`, `destructive`, `border`, `input`, `ring`.
