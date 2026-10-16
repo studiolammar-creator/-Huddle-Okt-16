@@ -1,27 +1,14 @@
+using Microsoft.AspNetCore.Components.Web;
+using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Mokka.Components;
 using Mokka.Services;
 
-var builder = WebApplication.CreateBuilder(args);
+var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
-builder.Services.AddRazorComponents()
-    .AddInteractiveServerComponents();
+builder.RootComponents.Add<Routes>("#app");
+builder.RootComponents.Add<HeadOutlet>("head::after");
 
-// One AppState per browser session (Blazor circuit): login, order and toast.
+// One AppState per browser tab: login, order and toast.
 builder.Services.AddScoped<AppState>();
 
-var app = builder.Build();
-
-if (!app.Environment.IsDevelopment())
-{
-    app.UseExceptionHandler("/Error", createScopeForErrors: true);
-    app.UseHsts();
-}
-
-app.UseHttpsRedirection();
-app.UseAntiforgery();
-
-app.MapStaticAssets();
-app.MapRazorComponents<App>()
-    .AddInteractiveServerRenderMode();
-
-app.Run();
+await builder.Build().RunAsync();

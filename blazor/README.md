@@ -1,6 +1,6 @@
 # Mokka: Blazor + Tailwind
 
-De volledige Mokka-app uit Figma (Huddle 16 Oktober, pagina "🎨 Iteration - V1.1.1", node `38:11`) als Blazor-app met Tailwind CSS v4 en het Mokka-thema uit `../theme/mokka.css`.
+De volledige Mokka-app uit Figma (Huddle 16 Oktober, pagina "🎨 Iteration - V1.1.1", node `38:11`) als Blazor WebAssembly-app (volledig statisch) met Tailwind CSS v4 en het Mokka-thema uit `../theme/mokka.css`.
 
 ## Starten
 
@@ -13,6 +13,19 @@ dotnet run           # bouwt ook wwwroot/app.css, daarna http://localhost:5180
 ```
 
 Tijdens het werken: `npm run css:watch` in een tweede terminal, zodat nieuwe Tailwind-klassen meteen in de CSS komen.
+
+## Online (Vercel)
+
+Vercel kan geen .NET bouwen, dus de GitHub Action `.github/workflows/deploy-vercel.yml` doet het: bij elke push naar `main` die `blazor/` of `theme/` raakt, draait hij `dotnet publish` en zet hij `publish/wwwroot` als kant-en-klare deployment op het Vercel-project `huddle`. Onbekende paden zoals `/menu` vallen terug op `index.html`, zodat de routes ook na herladen werken.
+
+Nodig: een repository-secret `VERCEL_TOKEN` (GitHub → Settings → Secrets and variables → Actions). `vercel.json` in de root zet de eigen Git-builds van Vercel uit, want die leveren alleen een 404 op.
+
+Lokaal de statische build testen:
+
+```bash
+dotnet publish -c Release -o ../publish
+npx serve -s ../publish/wwwroot
+```
 
 ## Schermen
 
@@ -49,7 +62,7 @@ De gast- en ingelogde varianten uit Figma zijn telkens één pagina die op `AppS
 | `wwwroot/img` | Foto's uit Figma (512 px productfoto's, hero en zaak). |
 | `wwwroot/icons` | Lucide-iconen (uit Figma en `lucide-static`), getoond als CSS-mask in de tekstkleur. |
 
-De app draait volledig interactief (Interactive Server, zonder prerender), zodat de staat bewaard blijft zolang de tab open is. Er is geen database: herladen zet alles terug.
+De app draait volledig in de browser (Blazor WebAssembly, opgestart vanuit `wwwroot/index.html`), zodat de staat bewaard blijft zolang de tab open is. Er is geen database: herladen zet alles terug.
 
 ## Van Figma naar code
 

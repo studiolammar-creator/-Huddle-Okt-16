@@ -5,6 +5,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="theme-color" content="#faf7f2" />
+    <title>Mokka</title>
     <base href="/" />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -12,19 +13,21 @@
     <link rel="stylesheet"
           href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT,WONK@9..144,600,0,1&family=Inter:wght@400;500;600&display=swap" />
 
-    <link rel="stylesheet" href="@Assets["app.css"]" />
-    <HeadOutlet @rendermode="AppRenderMode" />
+    <link rel="stylesheet" href="app.css" />
 </head>
 
-<body>
-    <Routes @rendermode="AppRenderMode" />
-    <script src="_framework/blazor.web.js"></script>
+<body class="bg-background text-foreground">
+    <div id="app">
+        <div class="flex min-h-dvh items-center justify-center">
+            <p class="text-display text-primary">Mokka</p>
+        </div>
+    </div>
+
+    <div id="blazor-error-ui" role="alert">
+        Er ging iets mis. <a href="" class="underline">Herladen</a>
+    </div>
+
+    <script src="_framework/blazor.webassembly.js"></script>
 </body>
 
 </html>
-
-@code {
-    // The whole app is interactive, so AppState lives as long as the browser tab.
-    // No prerendering: the first render already uses the session's state.
-    private static readonly IComponentRenderMode AppRenderMode = new InteractiveServerRenderMode(prerender: false);
-}

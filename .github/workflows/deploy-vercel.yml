@@ -1,0 +1,74 @@
+# Builds the Mokka Blazor WebAssembly app and deploys the static output to the Vercel project "huddle".
+# Vercel can't build .NET itself, so the build happens here and is uploaded as a prebuilt deployment.
+# Needs one repository secret: VERCEL_TOKEN (vercel.com/account/tokens).
+
+name: Deploy Mokka to Vercel
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "blazor/**"
+      - "theme/**"
+      - ".github/workflows/deploy-vercel.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: vercel-production
+  cancel-in-progress: true
+
+env:
+  VERCEL_ORG_ID: team_8IFbNSwbIXQ05CHZ0PJsjSLp
+  VERCEL_PROJECT_ID: prj_Uz7w99zIwbrT0P3Hc0bxQX7WYJxM
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 9.0.x
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: blazor/package-lock.json
+
+      - name: Install Tailwind CLI
+        working-directory: blazor
+        run: npm ci
+
+      - name: Publish Blazor WebAssembly
+        working-directory: blazor
+        run: dotnet publish -c Release -o ../publish
+
+      # Vercel Build Output API v3: static files plus a fallback to index.html for deep links like /menu.
+      - name: Prepare Vercel output
+        run: |
+          mkdir -p .vercel/output/static
+          cp -R publish/wwwroot/. .vercel/output/static/
+          find .vercel/output/static -name '*.br' -delete
+          find .vercel/output/static -name '*.gz' -delete
+          cat > .vercel/output/config.json <<'EOF'
+          {
+            "version": 3,
+            "routes": [
+              { "handle": "filesystem" },
+              { "src": "/(.*)", "dest": "/index.html" }
+            ]
+          }
+          EOF
+
+      - name: Deploy to Vercel (production)
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: |
+          if [ -z "$VERCEL_TOKEN" ]; then
+            echo "::error::Add the VERCEL_TOKEN repository secret to deploy (Settings → Secrets and variables → Actions)."
+            exit 1
+          fi
+          url=$(npx --yes vercel@61.1.0 deploy --prebuilt --prod --token "$VERCEL_TOKEN")
+          echo "Deployed: $url" >> "$GITHUB_STEP_SUMMARY"
