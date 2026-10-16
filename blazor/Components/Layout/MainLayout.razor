@@ -1,6 +1,7 @@
 @inherits LayoutComponentBase
 
 @* Mobile app shell: 390 px wide on larger screens, full width on phones. *@
-<div class="mx-auto min-h-dvh w-full max-w-[390px] bg-background text-foreground">
+<div class="relative mx-auto min-h-dvh w-full max-w-[390px] bg-background text-foreground">
     @Body
+    <Toast />
 </div>

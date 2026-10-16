@@ -1,0 +1,20 @@
+@* Figma: shared top of Login, Registreren and the password screens:
+   photo of the café with back button and word mark, sheet sliding over it. *@
+<div class="flex min-h-dvh flex-col">
+    <div class="relative -mb-7 flex h-55 shrink-0 items-start gap-2 overflow-hidden pt-14 pl-4">
+        <img src="img/zaak.jpg" alt="" class="absolute inset-0 size-full object-cover" />
+        <BackButton Href="@BackHref" Label="@BackLabel" Class="relative" />
+        <span class="relative rounded-full bg-background px-3.5 pt-1 pb-1.5 font-display text-[20px] leading-7 font-semibold text-foreground [font-variation-settings:'SOFT'_0,'WONK'_1]">
+            Mokka
+        </span>
+    </div>
+    <main class="relative flex flex-1 flex-col gap-5 rounded-t-lg bg-background px-4 pt-7 pb-8">
+        @ChildContent
+    </main>
+</div>
+
+@code {
+    [Parameter, EditorRequired] public string BackHref { get; set; } = "";
+    [Parameter] public string BackLabel { get; set; } = "Terug";
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}

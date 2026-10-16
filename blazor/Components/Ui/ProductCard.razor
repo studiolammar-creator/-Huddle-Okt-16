@@ -1,0 +1,36 @@
+@inherits StateComponent
+
+@* Figma: component "Product Card" (photo 88 px, name, optional badge, summary, price, add button).
+   The whole card opens the product; the + button adds the default choice straight away. *@
+<article class="card relative flex items-center gap-3 p-3 transition-colors hover:bg-muted/40">
+    <img src="@Product.Image" alt="@Product.Name" width="88" height="88" loading="lazy"
+         class="size-22 shrink-0 rounded-sm object-cover" />
+
+    <div class="flex min-w-0 flex-1 flex-col gap-1">
+        <div class="flex items-center gap-2">
+            <h3 class="text-body-strong text-card-foreground">
+                <a href="@($"product/{Product.Slug}")" class="after:absolute after:inset-0 after:rounded-lg focus-visible:outline-none focus-visible:after:outline-2 focus-visible:after:outline-offset-2 focus-visible:after:outline-ring">
+                    @Product.Name
+                </a>
+            </h3>
+            @if (Product.Badge is not null)
+            {
+                <span class="rounded-full bg-accent px-2 py-0.5 text-caption font-medium text-accent-foreground">@Product.Badge</span>
+            }
+        </div>
+        <p class="text-caption line-clamp-2 text-muted-foreground">@Product.Summary</p>
+        <div class="flex items-center justify-between">
+            <p class="text-small text-card-foreground">@Catalog.Euro(Product.Price)</p>
+            <button type="button"
+                    aria-label="@($"{Product.Name} toevoegen aan je bestelling")"
+                    class="relative z-10 inline-flex size-11 items-center justify-center rounded-lg bg-primary text-primary-foreground transition-[background-color,transform] duration-150 hover:bg-primary/90 active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+                    @onclick="() => State.Add(Product)">
+                <Icon Name="plus" />
+            </button>
+        </div>
+    </div>
+</article>
+
+@code {
+    [Parameter, EditorRequired] public Product Product { get; set; } = default!;
+}

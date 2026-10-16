@@ -1,0 +1,14 @@
+@* Figma: "Inloggen of registreren" (shadcn Tabs, 2 parts). Keeps ?terug=afrekenen when switching. *@
+<nav class="segmented" aria-label="Inloggen of registreren">
+    <a href="@Link("login")" class="segment @(Active == "login" ? "segment-active" : "")"
+       aria-current="@(Active == "login" ? "page" : null)">Inloggen</a>
+    <a href="@Link("registreren")" class="segment @(Active == "registreren" ? "segment-active" : "")"
+       aria-current="@(Active == "registreren" ? "page" : null)">Registreren</a>
+</nav>
+
+@code {
+    [Parameter, EditorRequired] public string Active { get; set; } = "login";
+    [Parameter] public string? Terug { get; set; }
+
+    private string Link(string page) => string.IsNullOrEmpty(Terug) ? page : $"{page}?terug={Uri.EscapeDataString(Terug)}";
+}

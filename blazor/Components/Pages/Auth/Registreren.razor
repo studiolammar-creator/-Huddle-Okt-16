@@ -1,0 +1,58 @@
+@page "/registreren"
+@inherits StateComponent
+
+@* Mokka / Registreren 3043:487 — same flow as login, with first name and password rules. *@
+
+<PageTitle>Registreren · Mokka</PageTitle>
+
+<AuthShell BackHref="@(FromCheckout ? "bestelling" : "")" BackLabel="@(FromCheckout ? "Terug naar je bestelling" : "Terug naar home")">
+    <AuthTabs Active="registreren" Terug="@Terug" />
+
+    <div class="flex flex-col gap-2">
+        <h1 class="text-display text-foreground">@(FromCheckout ? "Nog één stap." : "Word vaste klant.")</h1>
+        <p class="text-body text-muted-foreground">
+            @(FromCheckout
+                ? "Maak een account om af te rekenen. Je bestelling blijft bewaard."
+                : "Maak een account en spaar stempels bij elke kop.")
+        </p>
+    </div>
+
+    <form class="contents" @onsubmit="Submit" novalidate>
+        <TextField Id="voornaam" Label="Voornaam" AutoComplete="given-name" Placeholder="Je voornaam"
+                   @bind-Value="_name" Error="@_nameError" />
+        <TextField Id="email" Label="E-mailadres" Type="email" AutoComplete="email" Placeholder="naam@voorbeeld.be"
+                   @bind-Value="_email" Error="@_emailError" />
+        <TextField Id="wachtwoord" Label="Kies een wachtwoord" Type="password" AutoComplete="new-password" Placeholder="Je wachtwoord"
+                   Help="Minstens 8 tekens, met een cijfer." @bind-Value="_password" Error="@_passwordError" />
+
+        <button type="submit" class="btn btn-primary w-full">Account aanmaken</button>
+    </form>
+
+    <SocialLogin OnLogin="() => Finish(State.Email, State.FirstName)" />
+</AuthShell>
+
+@code {
+    [SupplyParameterFromQuery(Name = "terug")] public string? Terug { get; set; }
+    private bool FromCheckout => Terug == "afrekenen";
+
+    private string _name = "";
+    private string _email = "";
+    private string _password = "";
+    private string? _nameError;
+    private string? _emailError;
+    private string? _passwordError;
+
+    private void Submit()
+    {
+        _nameError = string.IsNullOrWhiteSpace(_name) ? "Vul je voornaam in." : null;
+        _emailError = _email.Contains('@') ? null : "Vul een geldig e-mailadres in.";
+        _passwordError = Passwords.IsStrong(_password) ? null : "Gebruik minstens 8 tekens, met een cijfer.";
+        if (_nameError is null && _emailError is null && _passwordError is null) Finish(_email, _name);
+    }
+
+    private void Finish(string email, string name)
+    {
+        State.LogIn(email, name);
+        Nav.NavigateTo(FromCheckout ? "bestelling" : "");
+    }
+}

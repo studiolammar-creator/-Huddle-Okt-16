@@ -1,0 +1,19 @@
+@inject AppState State
+
+@* Top right of Home and Menu: avatar when logged in, "Inloggen" button for guests. *@
+@if (State.IsLoggedIn)
+{
+    <a href="profiel" aria-label="@($"Profiel van {State.FirstName}")"
+       class="flex size-11 shrink-0 items-center justify-center rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring">
+        <span class="flex size-10 items-center justify-center rounded-full bg-secondary text-small font-semibold text-foreground">
+            @State.Initial
+        </span>
+    </a>
+}
+else
+{
+    <a href="login" class="btn btn-outline btn-sm">
+        <Icon Name="user" />
+        Inloggen
+    </a>
+}

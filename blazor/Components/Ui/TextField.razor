@@ -1,0 +1,33 @@
+@* Figma: label above shadcn Input, optional help text, error text below. *@
+<div class="flex flex-col gap-2">
+    <label for="@Id" class="text-small text-foreground">@Label</label>
+    <input id="@Id" type="@Type" class="field" placeholder="@Placeholder" autocomplete="@AutoComplete"
+           value="@Value" @oninput="OnInput"
+           aria-invalid="@(Error is null ? null : "true")"
+           aria-describedby="@(Error is not null || Help is not null ? $"{Id}-hint" : null)" />
+    @if (Error is not null)
+    {
+        <p id="@($"{Id}-hint")" class="text-caption text-error-text">@Error</p>
+    }
+    else if (Help is not null)
+    {
+        <p id="@($"{Id}-hint")" class="text-caption text-muted-foreground">@Help</p>
+    }
+    @ChildContent
+</div>
+
+@code {
+    [Parameter, EditorRequired] public string Id { get; set; } = "";
+    [Parameter, EditorRequired] public string Label { get; set; } = "";
+    [Parameter] public string Type { get; set; } = "text";
+    [Parameter] public string? Placeholder { get; set; }
+    [Parameter] public string? AutoComplete { get; set; }
+    [Parameter] public string? Help { get; set; }
+    [Parameter] public string? Error { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    [Parameter] public string Value { get; set; } = "";
+    [Parameter] public EventCallback<string> ValueChanged { get; set; }
+
+    private Task OnInput(ChangeEventArgs e) => ValueChanged.InvokeAsync(e.Value?.ToString() ?? "");
+}

@@ -1,0 +1,33 @@
+@page "/wachtwoord-vergeten"
+@inherits StateComponent
+
+@* Mokka / Wachtwoord vergeten 3044:582 *@
+
+<PageTitle>Wachtwoord vergeten · Mokka</PageTitle>
+
+<AuthShell BackHref="login" BackLabel="Terug naar inloggen">
+    <span class="flex size-14 items-center justify-center rounded-full bg-secondary text-primary" aria-hidden="true">
+        <Icon Name="mail" Size="24" />
+    </span>
+    <div class="flex flex-col gap-2">
+        <h1 class="text-display text-foreground">Wachtwoord vergeten?</h1>
+        <p class="text-body text-muted-foreground">Geef het e-mailadres van je account. We sturen je een link om een nieuw wachtwoord te kiezen.</p>
+    </div>
+
+    <form class="contents" @onsubmit="Submit" novalidate>
+        <TextField Id="email" Label="E-mailadres" Type="email" AutoComplete="email" Placeholder="naam@voorbeeld.be"
+                   @bind-Value="_email" Error="@_error" />
+        <button type="submit" class="btn btn-primary w-full">Stuur herstellink</button>
+    </form>
+</AuthShell>
+
+@code {
+    private string _email = "";
+    private string? _error;
+
+    private void Submit()
+    {
+        _error = _email.Contains('@') ? null : "Vul een geldig e-mailadres in.";
+        if (_error is null) Nav.NavigateTo($"wachtwoord-vergeten/verstuurd?email={Uri.EscapeDataString(_email)}");
+    }
+}

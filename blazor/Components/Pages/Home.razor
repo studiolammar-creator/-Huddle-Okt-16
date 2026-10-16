@@ -1,139 +1,128 @@
 @page "/"
-@rendermode InteractiveServer
+@inherits StateComponent
 
 @*
-    Mokka / Home
-    Figma: Huddle 16 Oktober, page "Iteration - V1.1.0", node 3068:72
-    https://www.figma.com/design/zz9z4kvYU3iwp0aUeqbSlr/Huddle-16-Oktober-de-AI-Relay?node-id=3068-72
+    Mokka / Home (gast) 3040:265 and Mokka / Home (ingelogd) 3032:121
+    Same page: only the top right differs (Inloggen button or avatar).
 *@
 
 <PageTitle>Mokka</PageTitle>
 
-<main class="flex flex-col gap-6 pt-14 pb-32">
+<main class="flex flex-col gap-14 pt-14 pb-32">
 
-    @* Header: pickup location, profile and greeting *@
-    <header class="flex flex-col gap-2 px-4">
-        <div class="flex items-center justify-between">
-            <button type="button"
-                    aria-label="@($"Afhaallocatie wijzigen, nu {StoreName}")"
-                    class="flex h-11 items-center gap-2 rounded-lg px-4 text-small text-foreground transition-colors hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring">
-                <Icon Name="map-pinned" />
-                <span>@StoreName</span>
-                <Icon Name="chevron-down" />
-            </button>
-
-            <a href="profiel" aria-label="@($"Profiel van {CustomerName}")"
-               class="flex size-11 items-center justify-center rounded-full bg-accent text-body-strong text-accent-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring">
-                @CustomerName[0]
+    @* Hero *@
+    <section class="flex flex-col items-end gap-6" aria-labelledby="hero-titel">
+        <div class="flex w-full items-center justify-between px-4">
+            <span class="font-display text-[24px] leading-8 font-semibold text-foreground [font-variation-settings:'SOFT'_0,'WONK'_1]">Mokka</span>
+            <AccountButton />
+        </div>
+        <div class="flex w-full flex-col items-start gap-4 px-4">
+            <h1 id="hero-titel" class="text-hero text-foreground">Koffie die al op je wacht.</h1>
+            <p class="text-body text-muted-foreground">Bestel in de app en haal je koffie vers gezet af aan de toog op de Groenplaats.</p>
+            <a href="menu" class="btn btn-primary">
+                Bekijk het menu
+                <Icon Name="arrow-right" />
             </a>
         </div>
+        <img src="img/hero.jpg" alt="Barista schenkt melk in een cappuccino" width="374" height="300"
+             class="h-75 w-[calc(100%-16px)] rounded-l-lg object-cover" />
+    </section>
 
-        <h1 class="text-display text-foreground">@Greeting, @(CustomerName).</h1>
-        <p class="text-body text-muted-foreground">
-            Je @Favourite.Product.Name.ToLowerInvariant() van gisteren staat al klaar om te bestellen.
-        </p>
-    </header>
+    @* Zo werkt het: three verbs, stepped *@
+    <section class="flex flex-col gap-6 px-4" aria-labelledby="werkwijze-titel">
+        <h2 id="werkwijze-titel" class="text-title text-foreground">Zo werkt het</h2>
+        <ol class="flex flex-col gap-6">
+            <li class="flex flex-col gap-1">
+                <span class="text-display text-foreground">Kies.</span>
+                <span class="text-body text-muted-foreground">Blader door het menu en kies je maat en melk.</span>
+            </li>
+            <li class="flex flex-col gap-1 pl-14">
+                <span class="text-display text-foreground">Bestel.</span>
+                <span class="text-body text-muted-foreground">Betaal in de app, je bestelling gaat meteen naar de bar.</span>
+            </li>
+            <li class="flex flex-col gap-1 pl-28">
+                <span class="text-display text-primary">Haal af.</span>
+                <span class="text-body text-muted-foreground">Je krijgt een seintje zodra je kop klaarstaat.</span>
+            </li>
+        </ol>
+    </section>
 
-    @* Je vaste: one-tap reorder *@
-    <section aria-labelledby="vaste-titel" class="px-4">
-        <article class="flex flex-col overflow-hidden rounded-xl bg-primary text-primary-foreground shadow-[0_8px_24px_rgb(110_79_56/0.18)]">
-            <img src="@Favourite.Product.Image" alt="@Favourite.Product.Name" width="358" height="200"
-                 class="h-50 w-full object-cover" />
+    @* Nieuw aan de toog: checkerboard bento *@
+    <section class="flex flex-col gap-4 px-4" aria-labelledby="nieuw-titel">
+        <h2 id="nieuw-titel" class="text-title text-foreground">Nieuw aan de toog</h2>
+        <div class="grid grid-cols-2 gap-3">
+            <div class="flex flex-col gap-3">
+                <a href="product/cold-brew" class="block h-55 overflow-hidden rounded-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring">
+                    <img src="img/cold-brew.jpg" alt="Cold brew" class="size-full object-cover" />
+                </a>
+                <a href="product/chai-latte" class="flex h-37 flex-col justify-between rounded-lg bg-secondary p-4 text-secondary-foreground transition-colors hover:bg-secondary/80 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring">
+                    <span class="flex flex-col gap-1">
+                        <span class="text-title">Chai latte</span>
+                        <span class="text-caption">Zwarte thee met kaneel en kardemom.</span>
+                    </span>
+                    <span class="text-small">@Catalog.Euro(Catalog.Get("chai-latte").Price)</span>
+                </a>
+            </div>
+            <div class="flex flex-col gap-3">
+                <a href="product/cold-brew" class="flex h-37 flex-col justify-between rounded-lg bg-accent p-4 text-accent-foreground transition-colors hover:bg-accent/85 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring">
+                    <span class="flex flex-col gap-1">
+                        <span class="text-caption font-medium">Nieuw</span>
+                        <span class="text-title">Cold brew</span>
+                        <span class="text-caption">Koud getrokken, zacht en fris met ijs.</span>
+                    </span>
+                    <span class="text-small">@Catalog.Euro(Catalog.Get("cold-brew").Price)</span>
+                </a>
+                <a href="product/chai-latte" class="block h-55 overflow-hidden rounded-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring">
+                    <img src="img/chai-latte.jpg" alt="Chai latte" class="size-full object-cover" />
+                </a>
+            </div>
+        </div>
+    </section>
 
-            <div class="flex flex-col gap-4 px-5 pt-4 pb-5">
-                <div class="flex items-end gap-3">
-                    <div class="flex min-w-0 flex-1 flex-col gap-0.5">
-                        <p class="text-caption opacity-80">Je vaste</p>
-                        <h2 id="vaste-titel" class="text-display">@Favourite.Product.Name</h2>
-                        <p class="text-small opacity-80">@Favourite.Options</p>
-                    </div>
-                    <p class="text-title whitespace-nowrap">@Format.Euro(Favourite.Product.Price)</p>
+    @* Over Mokka *@
+    <section class="flex flex-col gap-6" aria-labelledby="verhaal-titel">
+        <img src="img/zaak.jpg" alt="Interieur van Mokka Groenplaats" width="390" height="248" class="h-62 w-full object-cover" loading="lazy" />
+        <div class="flex flex-col gap-3 px-4">
+            <h2 id="verhaal-titel" class="text-display text-foreground">Klein, warm en vlak bij de Groenplaats.</h2>
+            <p class="text-body text-muted-foreground">We branden in kleine batches en zetten elke kop pas wanneer je bestelling binnenkomt. Geen wachtrij, wel tijd voor een praatje aan de toog.</p>
+        </div>
+    </section>
+
+    @* Langskomen *@
+    <section class="flex flex-col gap-4 px-4" aria-labelledby="langskomen-titel">
+        <h2 id="langskomen-titel" class="text-title text-foreground">Langskomen</h2>
+        <div class="card flex flex-col gap-4 p-4">
+            <div class="flex items-start gap-3">
+                <Icon Name="map-pinned" Size="20" Class="text-primary" />
+                <div class="flex flex-col gap-0.5">
+                    <p class="text-small text-card-foreground">Groenplaats 12, 2000 Antwerpen</p>
+                    <p class="text-caption text-muted-foreground">Afhalen aan de toog, rechts van de ingang</p>
                 </div>
-
-                <button type="button"
-                        class="flex h-11 w-full items-center justify-center gap-2 rounded-lg bg-secondary px-6 text-small text-secondary-foreground transition-[background-color,transform] duration-150 hover:bg-secondary/85 active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary"
-                        @onclick="() => Add(Favourite.Product)">
-                    <Icon Name="repeat" />
-                    Bestel opnieuw
-                </button>
             </div>
-        </article>
+            <div class="divider"></div>
+            <div class="flex items-start gap-3">
+                <Icon Name="store" Size="20" Class="text-primary" />
+                <div class="flex flex-col gap-0.5">
+                    <p class="text-small text-card-foreground">Ma tot vr 7:30 tot 18:00</p>
+                    <p class="text-caption text-muted-foreground">Za en zo 8:30 tot 17:00</p>
+                </div>
+            </div>
+            <a href="https://www.google.com/maps/search/?api=1&query=Groenplaats+12+2000+Antwerpen" target="_blank" rel="noopener"
+               class="btn btn-outline w-full">Plan je route</a>
+        </div>
     </section>
 
-    @* Stempelkaart *@
-    <section aria-label="Stempelkaart" class="px-4">
-        <StampProgress Stamps="Stamps" Total="10" />
-    </section>
-
-    @* Iets anders? horizontal product rail *@
-    <section aria-labelledby="anders-titel" class="flex flex-col gap-3">
-        <div class="flex items-center justify-between px-4">
-            <h2 id="anders-titel" class="text-title text-foreground">Iets anders?</h2>
-            <a href="menu"
-               class="flex h-11 items-center rounded-lg px-4 text-small text-primary transition-colors hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring">
-                Volledig menu
+    @* Afsluiter *@
+    <section class="px-4">
+        <div class="flex flex-col gap-4 rounded-lg bg-primary p-6 text-primary-foreground">
+            <h2 class="text-display">Zin in iets warms?</h2>
+            <p class="text-body">Je kop staat klaar nog voor je binnenstapt.</p>
+            <a href="menu" class="btn btn-secondary w-full">
+                Bekijk het menu
+                <Icon Name="arrow-right" />
             </a>
         </div>
-
-        <ul class="no-scrollbar flex snap-x snap-mandatory scroll-px-4 gap-3 overflow-x-auto px-4 pb-2">
-            @foreach (var product in Suggestions)
-            {
-                <li class="shrink-0 snap-start">
-                    <ProductTile Product="product" OnAdd="Add" />
-                </li>
-            }
-        </ul>
     </section>
-
-    @* Zaakstatus *@
-    <section aria-label="Status van de zaak" class="px-4">
-        <div class="flex items-center gap-3 rounded-lg border border-info-border bg-info-subtle px-4 py-3 text-info-text">
-            <Icon Name="clock" Size="20" Class="text-info" />
-            <div class="flex min-w-0 flex-1 flex-col gap-0.5">
-                <p class="text-small">Open tot @Status.OpenUntil</p>
-                <p class="text-caption">@Status.Message</p>
-            </div>
-        </div>
-    </section>
-
-    @* Screen reader feedback after adding a product *@
-    <p class="sr-only" role="status" aria-live="polite">@_announcement</p>
 </main>
 
 <Tabbalk Active="home" />
-
-@code {
-    // Sample data matching the Figma design. Replace with a service during the workshop.
-    private const string CustomerName = "Erhan";
-    private const string StoreName = "Mokka Groenplaats";
-    private const int Stamps = 7;
-
-    private static readonly FavouriteOrder Favourite =
-        new(new Product("Cappuccino", 3.40m, "img/cappuccino.png"), "Medium, gewone melk");
-
-    private static readonly Product[] Suggestions =
-    [
-        new("Flat white", 3.60m, "img/flat-white.png"),
-        new("Cold brew", 3.90m, "img/cold-brew.png", Badge: "Nieuw"),
-        new("Chai latte", 3.80m, "img/chai-latte.png"),
-    ];
-
-    private static readonly StoreStatus Status =
-        new("18:00", "Rustig aan de toog. Je kop is klaar in ongeveer 5 minuten.");
-
-    private readonly List<Product> _order = [];
-    private string _announcement = "";
-
-    private static string Greeting => DateTime.Now.Hour switch
-    {
-        < 12 => "Goeiemorgen",
-        < 18 => "Goeiemiddag",
-        _ => "Goeienavond"
-    };
-
-    private void Add(Product product)
-    {
-        _order.Add(product);
-        _announcement = $"{product.Name} toegevoegd aan je bestelling. {_order.Count} in totaal.";
-    }
-}

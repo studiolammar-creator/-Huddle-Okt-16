@@ -1,0 +1,91 @@
+@page "/menu"
+@inherits StateComponent
+
+@*
+    Mokka / Menu (gast) 3041:284 and Mokka / Menu 3023:1771
+    Guests can browse and add; logging in only happens at checkout.
+*@
+
+<PageTitle>Menu · Mokka</PageTitle>
+
+<main class="flex flex-col gap-6 pt-14 @(State.ItemCount > 0 ? "pb-50" : "pb-28")">
+    <header class="flex flex-col gap-3 px-4">
+        <div class="flex items-center justify-between">
+            <button type="button" class="btn btn-ghost btn-sm" aria-label="Afhaallocatie wijzigen, nu Mokka Groenplaats">
+                <Icon Name="map-pinned" />
+                Mokka Groenplaats
+                <Icon Name="chevron-down" />
+            </button>
+            <AccountButton />
+        </div>
+        <h1 class="text-display text-foreground">@Greeting</h1>
+    </header>
+
+    @* Zoeken: filters the list by name *@
+    <div class="px-4">
+        <label class="relative block">
+            <span class="sr-only">Zoek je koffie</span>
+            <Icon Name="search" Class="pointer-events-none absolute top-1/2 left-4 -translate-y-1/2 text-muted-foreground" />
+            <input type="search" class="field pl-11" placeholder="Zoek je koffie"
+                   value="@_query" @oninput="e => _query = e.Value?.ToString() ?? string.Empty" />
+        </label>
+    </div>
+
+    @* Categorieën: jump to a section *@
+    <nav class="px-4" aria-label="Categorieën">
+        <div class="segmented">
+            @foreach (var category in Catalog.Categories)
+            {
+                var c = category;
+                <a href="@($"menu#{Catalog.Anchor(c)}")" class="segment @(c == _active ? "segment-active" : "")"
+                   aria-current="@(c == _active ? "true" : null)" @onclick="() => _active = c">@c</a>
+            }
+        </div>
+    </nav>
+
+    @foreach (var category in Catalog.Categories)
+    {
+        var items = Filtered.Where(p => p.Category == category).ToList();
+        if (items.Count == 0 && !string.IsNullOrWhiteSpace(_query)) continue;
+
+        <section id="@Catalog.Anchor(category)" class="flex scroll-mt-4 flex-col gap-3 px-4" aria-labelledby="@($"titel-{Catalog.Anchor(category)}")">
+            <h2 id="@($"titel-{Catalog.Anchor(category)}")" class="text-title text-foreground">@category</h2>
+            @if (items.Count == 0)
+            {
+                <p class="text-body text-muted-foreground">Filterkoffie is even uitverkocht. Morgen staat er een nieuwe batch klaar.</p>
+            }
+            @foreach (var product in items)
+            {
+                <ProductCard Product="product" />
+            }
+        </section>
+    }
+
+    @if (!Filtered.Any())
+    {
+        <p class="px-4 text-body text-muted-foreground">Niets gevonden voor “@_query”. Probeer cappuccino of thee.</p>
+    }
+</main>
+
+@if (State.ItemCount > 0)
+{
+    <div class="bottom-bar bottom-20 pb-3">
+        <a href="bestelling" class="btn btn-primary w-full">
+            <Icon Name="shopping-bag" />
+            Bekijk bestelling (@State.ItemCount) · @Catalog.Euro(State.Total)
+        </a>
+    </div>
+}
+
+<Tabbalk Active="menu" />
+
+@code {
+    private string Greeting => State.IsLoggedIn ? $"{AppState.Greeting}, {State.FirstName}" : AppState.Greeting;
+
+    private string _query = "";
+    private string _active = Catalog.Categories[0];
+
+    private IEnumerable<Product> Filtered => string.IsNullOrWhiteSpace(_query)
+        ? Catalog.Products
+        : Catalog.Products.Where(p => p.Name.Contains(_query.Trim(), StringComparison.OrdinalIgnoreCase));
+}

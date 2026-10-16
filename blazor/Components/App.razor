@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="theme-color" content="#faf7f2" />
     <base href="/" />
-    <title>Mokka</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -14,12 +13,18 @@
           href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT,WONK@9..144,600,0,1&family=Inter:wght@400;500;600&display=swap" />
 
     <link rel="stylesheet" href="@Assets["app.css"]" />
-    <HeadOutlet />
+    <HeadOutlet @rendermode="AppRenderMode" />
 </head>
 
 <body>
-    <Routes />
+    <Routes @rendermode="AppRenderMode" />
     <script src="_framework/blazor.web.js"></script>
 </body>
 
 </html>
+
+@code {
+    // The whole app is interactive, so AppState lives as long as the browser tab.
+    // No prerendering: the first render already uses the session's state.
+    private static readonly IComponentRenderMode AppRenderMode = new InteractiveServerRenderMode(prerender: false);
+}

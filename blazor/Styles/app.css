@@ -12,10 +12,92 @@
   font-variation-settings: "SOFT" 0, "WONK" 1;
 }
 
-/* Horizontal product rail without a visible scrollbar. */
-.no-scrollbar {
-  scrollbar-width: none;
+/* Card shadow from Figma: 0 2 8, coffee brown at 8 %. */
+@utility shadow-card {
+  box-shadow: 0 2px 8px rgb(110 79 56 / 0.08);
 }
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
+
+/* Toast slides in from the top; static for people who prefer reduced motion. */
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .toast-in {
+    animation: toast-in 200ms ease-out;
+  }
+}
+
+@utility no-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/*
+ * Mokka building blocks, matching the shadcn components used in Figma.
+ * Every interactive control is at least 44 px high (accessibility audit).
+ */
+@layer components {
+  .btn {
+    @apply inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-lg px-6 whitespace-nowrap transition-[background-color,transform] duration-150 select-none active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring disabled:pointer-events-none disabled:opacity-50;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    font-weight: 500;
+  }
+  .btn-sm {
+    @apply px-3;
+  }
+  .btn-primary {
+    @apply bg-primary text-primary-foreground hover:bg-primary/90;
+  }
+  .btn-secondary {
+    @apply bg-secondary text-secondary-foreground hover:bg-secondary/80;
+  }
+  .btn-outline {
+    @apply border border-border bg-card text-foreground shadow-xs hover:bg-muted;
+  }
+  .btn-ghost {
+    @apply px-4 text-foreground hover:bg-muted;
+  }
+
+  .icon-btn {
+    @apply inline-flex size-11 shrink-0 items-center justify-center rounded-lg border border-border bg-card text-foreground shadow-sm transition-[background-color,transform] duration-150 hover:bg-muted active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring;
+  }
+
+  .card {
+    @apply rounded-lg border border-border bg-card shadow-card;
+  }
+
+  .field {
+    @apply h-11 w-full rounded-lg border border-input bg-muted px-4 text-foreground shadow-xs placeholder:text-muted-foreground focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-ring aria-invalid:border-error aria-invalid:bg-error-subtle;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+  }
+
+  /* shadcn Tabs: muted track, active segment in primary */
+  .segmented {
+    @apply flex h-11 w-full items-center rounded-[10px] bg-muted p-[3px];
+  }
+  .segment {
+    @apply flex h-full flex-1 items-center justify-center rounded-[10px] px-2 text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-ring;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    font-weight: 500;
+  }
+  .segment-active {
+    @apply bg-primary text-primary-foreground shadow-sm hover:text-primary-foreground;
+  }
+
+  .divider {
+    @apply h-px w-full shrink-0 bg-border;
+  }
+
+  /* Fixed bottom bar (order bar, pay bar, add bar) inside the 390 px shell. */
+  .bottom-bar {
+    @apply fixed inset-x-0 z-10 mx-auto flex w-full max-w-[390px] flex-col gap-2 bg-background px-4 pt-3;
+  }
 }

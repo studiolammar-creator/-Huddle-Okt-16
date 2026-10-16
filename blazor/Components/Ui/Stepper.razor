@@ -1,0 +1,21 @@
+@* Figma: "Aantal" stepper with two outline icon buttons (44 × 44). *@
+<div class="flex items-center @(Wide ? "gap-4" : "gap-3")" role="group" aria-label="@($"Aantal {Label}")">
+    <button type="button" class="icon-btn" aria-label="@($"Eén {Label} minder")"
+            disabled="@(Value <= Min)" @onclick="() => OnDecrease.InvokeAsync()">
+        <Icon Name="minus" />
+    </button>
+    <span class="w-4 text-center text-small text-foreground" aria-live="polite">@Value</span>
+    <button type="button" class="icon-btn" aria-label="@($"Eén {Label} meer")"
+            @onclick="() => OnIncrease.InvokeAsync()">
+        <Icon Name="plus" />
+    </button>
+</div>
+
+@code {
+    [Parameter] public int Value { get; set; }
+    [Parameter] public int Min { get; set; } = 0;
+    [Parameter] public string Label { get; set; } = "";
+    [Parameter] public bool Wide { get; set; }
+    [Parameter] public EventCallback OnDecrease { get; set; }
+    [Parameter] public EventCallback OnIncrease { get; set; }
+}

@@ -1,0 +1,27 @@
+@page "/wachtwoord-vergeten/verstuurd"
+@inherits StateComponent
+
+@* Mokka / Herstellink verstuurd 3044:632
+   The mail icon stands in for the link in the e-mail (prototype shortcut to the new password screen). *@
+
+<PageTitle>Check je mailbox · Mokka</PageTitle>
+
+<AuthShell BackHref="login" BackLabel="Terug naar inloggen">
+    <a href="nieuw-wachtwoord" class="flex size-14 items-center justify-center rounded-full bg-secondary text-primary transition-colors hover:bg-secondary/80 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+       aria-label="Open de herstellink (demo)">
+        <Icon Name="mail" Size="24" />
+    </a>
+    <div class="flex flex-col gap-2">
+        <h1 class="text-display text-foreground">Check je mailbox.</h1>
+        <p class="text-body text-muted-foreground">We stuurden een herstellink naar @(Email ?? "je e-mailadres"). Open de link op dit toestel om een nieuw wachtwoord te kiezen.</p>
+    </div>
+    <a href="login" class="btn btn-primary w-full">Terug naar inloggen</a>
+    <button type="button" class="btn w-full text-primary hover:bg-muted" @onclick="Resend">Niets ontvangen? Stuur opnieuw</button>
+    <p class="text-center text-caption text-muted-foreground">Kijk ook even in je spam als je niets ziet.</p>
+</AuthShell>
+
+@code {
+    [SupplyParameterFromQuery(Name = "email")] public string? Email { get; set; }
+
+    private void Resend() => State.ShowToast("Nieuwe link verstuurd", "Kijk over een minuutje opnieuw in je mailbox.");
+}

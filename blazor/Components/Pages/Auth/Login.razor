@@ -1,0 +1,59 @@
+@page "/login"
+@inherits StateComponent
+
+@*
+    Mokka / Login 3036:250
+    ?terug=afrekenen: opened from the guest order. Heading changes and after login you go back to pay
+    (Figma prototype variables vanAfrekenen / loginKop / loginTekst).
+*@
+
+<PageTitle>Inloggen · Mokka</PageTitle>
+
+<AuthShell BackHref="@(FromCheckout ? "bestelling" : "")" BackLabel="@(FromCheckout ? "Terug naar je bestelling" : "Terug naar home")">
+    <AuthTabs Active="login" Terug="@Terug" />
+
+    <div class="flex flex-col gap-2">
+        <h1 class="text-display text-foreground">@(FromCheckout ? "Nog één stap." : "Welkom terug.")</h1>
+        <p class="text-body text-muted-foreground">
+            @(FromCheckout
+                ? "Log in om af te rekenen. Je bestelling blijft bewaard."
+                : "Log in om sneller te bestellen en stempels te sparen.")
+        </p>
+    </div>
+
+    <form class="contents" @onsubmit="Submit" novalidate>
+        <TextField Id="email" Label="E-mailadres" Type="email" AutoComplete="email" Placeholder="naam@voorbeeld.be"
+                   @bind-Value="_email" Error="@_emailError" />
+        <TextField Id="wachtwoord" Label="Wachtwoord" Type="password" AutoComplete="current-password" Placeholder="Je wachtwoord"
+                   @bind-Value="_password" Error="@_passwordError">
+            <a href="wachtwoord-vergeten" class="btn btn-ghost btn-sm self-start px-0 text-primary hover:bg-transparent hover:underline">Wachtwoord vergeten?</a>
+        </TextField>
+
+        <button type="submit" class="btn btn-primary w-full">Inloggen</button>
+    </form>
+
+    <SocialLogin OnLogin="() => Finish(State.Email)" />
+</AuthShell>
+
+@code {
+    [SupplyParameterFromQuery(Name = "terug")] public string? Terug { get; set; }
+    private bool FromCheckout => Terug == "afrekenen";
+
+    private string _email = "";
+    private string _password = "";
+    private string? _emailError;
+    private string? _passwordError;
+
+    private void Submit()
+    {
+        _emailError = _email.Contains('@') ? null : "Vul een geldig e-mailadres in.";
+        _passwordError = _password.Length > 0 ? null : "Vul je wachtwoord in.";
+        if (_emailError is null && _passwordError is null) Finish(_email);
+    }
+
+    private void Finish(string email)
+    {
+        State.LogIn(email);
+        Nav.NavigateTo(FromCheckout ? "bestelling" : "");
+    }
+}

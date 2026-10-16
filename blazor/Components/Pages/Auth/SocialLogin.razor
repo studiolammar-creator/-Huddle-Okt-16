@@ -1,0 +1,16 @@
+@* Figma: "of" divider, Apple and Google buttons, terms line. *@
+<div class="flex items-center gap-3" aria-hidden="true">
+    <span class="divider flex-1"></span>
+    <span class="text-caption text-muted-foreground">of</span>
+    <span class="divider flex-1"></span>
+</div>
+<div class="flex gap-3">
+    <button type="button" class="btn btn-outline flex-1" @onclick="OnLogin">Apple</button>
+    <button type="button" class="btn btn-outline flex-1" @onclick="OnLogin">Google</button>
+</div>
+<p class="text-center text-caption text-muted-foreground">Door verder te gaan ga je akkoord met de voorwaarden en het privacybeleid.</p>
+
+@code {
+    /// <summary>Demo only: signs in with the sample account.</summary>
+    [Parameter] public EventCallback OnLogin { get; set; }
+}

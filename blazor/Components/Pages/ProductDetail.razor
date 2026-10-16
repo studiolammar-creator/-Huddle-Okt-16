@@ -1,0 +1,104 @@
+@page "/product/{Slug}"
+@inherits StateComponent
+
+@* Mokka / Product 3049:2224 — size, milk, quantity and "Toevoegen · €x". *@
+
+@if (_product is null)
+{
+    <PageTitle>Niet gevonden · Mokka</PageTitle>
+    <main class="flex flex-col gap-4 px-4 pt-14">
+        <BackButton Href="menu" Label="Terug naar het menu" />
+        <h1 class="text-display">Dit product bestaat niet.</h1>
+        <a href="menu" class="btn btn-primary">Naar het menu</a>
+    </main>
+}
+else
+{
+    <PageTitle>@_product.Name · Mokka</PageTitle>
+
+    <main class="flex flex-col pb-30">
+        <div class="relative h-80 w-full overflow-hidden">
+            <img src="@_product.Image" alt="@_product.Name" class="size-full object-cover" />
+            <BackButton Href="menu" Label="Terug naar het menu" Class="absolute top-14 left-4" />
+        </div>
+
+        <div class="flex flex-col gap-6 px-4 pt-5">
+            <div class="flex flex-col gap-2">
+                <div class="flex items-center gap-2">
+                    <h1 class="text-display text-foreground">@_product.Name</h1>
+                    @if (_product.Badge is not null)
+                    {
+                        <span class="rounded-full bg-accent px-2 py-0.5 text-caption font-medium text-accent-foreground">@_product.Badge</span>
+                    }
+                </div>
+                <p class="text-body text-muted-foreground">@_product.Description</p>
+                <p class="text-title text-foreground">@Catalog.Euro(_product.Price)</p>
+            </div>
+
+            <div class="divider"></div>
+
+            @* Maat: shadcn Toggle Group *@
+            <fieldset class="flex flex-col gap-3">
+                <legend class="mb-3 text-title text-foreground">Maat</legend>
+                <div class="flex" role="radiogroup" aria-label="Maat">
+                    @foreach (var size in Enum.GetValues<Size>())
+                    {
+                        var s = size;
+                        var selected = s == _size;
+                        <button type="button" role="radio" aria-checked="@(selected ? "true" : "false")"
+                                class="h-11 flex-1 border text-small transition-colors first:rounded-l-sm last:rounded-r-sm focus-visible:z-10 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-ring @(selected ? "border-primary bg-secondary font-semibold" : "border-border hover:bg-muted")"
+                                @onclick="() => _size = s">@s</button>
+                    }
+                </div>
+            </fieldset>
+
+            @* Melk: Rich Radio Group, 2 × 2 *@
+            <fieldset class="flex flex-col gap-3">
+                <legend class="mb-3 text-title text-foreground">Melk</legend>
+                <div class="grid grid-cols-2 gap-3">
+                    @foreach (var milk in Enum.GetValues<Milk>())
+                    {
+                        var m = milk;
+                        <RadioCard Group="melk" Title="@m.ToString()" Checked="@(m == _milk)" OnSelect="() => _milk = m" />
+                    }
+                </div>
+            </fieldset>
+
+            <div class="flex items-center justify-between">
+                <h2 class="text-title text-foreground">Aantal</h2>
+                <Stepper Value="_quantity" Min="1" Label="@_product.Name" Wide="true"
+                         OnDecrease="() => _quantity = Math.Max(1, _quantity - 1)"
+                         OnIncrease="() => _quantity++" />
+            </div>
+        </div>
+    </main>
+
+    <div class="bottom-bar bottom-0 border-t border-border pb-8">
+        <button type="button" class="btn btn-primary w-full" @onclick="Add">
+            Toevoegen · @Catalog.Euro(_product.Price * _quantity)
+        </button>
+    </div>
+}
+
+@code {
+    [Parameter] public string Slug { get; set; } = "";
+
+    private Product? _product;
+    private Size _size = Size.Medium;
+    private Milk _milk = Milk.Gewoon;
+    private int _quantity = 1;
+
+    protected override void OnParametersSet()
+    {
+        _product = Catalog.Find(Slug);
+        if (_product is not null) _milk = _product.DefaultMilk;
+        _size = Size.Medium;
+        _quantity = 1;
+    }
+
+    private void Add()
+    {
+        State.Add(_product!, _size, _milk, _quantity);
+        Nav.NavigateTo("menu");
+    }
+}

@@ -1,0 +1,58 @@
+@page "/bestellingen"
+@inherits StateComponent
+
+@* Mokka / Bestellingen 3050:810 — running order on top, earlier orders with "Bestel opnieuw". *@
+
+<PageTitle>Je bestellingen · Mokka</PageTitle>
+
+<main class="flex flex-col gap-6 px-4 pt-14 pb-26">
+    <h1 class="text-display text-foreground">Je bestellingen</h1>
+
+    @if (State.OrderNumber is not null)
+    {
+        <section class="flex flex-col gap-3" aria-labelledby="lopend-titel">
+            <h2 id="lopend-titel" class="text-title text-foreground">Lopend</h2>
+            <a href="bevestiging" class="flex items-center gap-4 rounded-lg bg-primary px-5 py-4 text-primary-foreground transition-colors hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring">
+                <span class="text-display">@State.OrderNumber</span>
+                <span class="flex flex-1 flex-col gap-0.5">
+                    <span class="text-body-strong">In de maak</span>
+                    <span class="text-caption">@(string.Join(", ", State.PlacedOrder.Select(l => l.Product.Name).Distinct())). Klaar over ongeveer 8 min.</span>
+                </span>
+                <Icon Name="arrow-right" Size="20" />
+            </a>
+        </section>
+    }
+
+    <section class="flex flex-col gap-3" aria-labelledby="eerder-titel">
+        <h2 id="eerder-titel" class="text-title text-foreground">Eerder</h2>
+        <ul class="flex flex-col rounded-lg border border-border bg-card px-4">
+            @for (var i = 0; i < State.History.Count; i++)
+            {
+                var order = State.History[i];
+                <li class="flex items-center gap-3 py-3.5 @(i > 0 ? "border-t border-border" : "")">
+                    <div class="flex flex-1 flex-col gap-0.5">
+                        <p class="text-small text-card-foreground">@order.Names</p>
+                        <p class="text-caption text-muted-foreground">@order.When, @Catalog.Euro(order.Total)</p>
+                    </div>
+                    <button type="button" class="btn btn-secondary btn-sm" @onclick="() => Reorder(order)"
+                            aria-label="@($"{order.Names} opnieuw bestellen")">Bestel opnieuw</button>
+                </li>
+            }
+        </ul>
+    </section>
+</main>
+
+<Tabbalk Active="bestellingen" />
+
+@code {
+    protected override void OnParametersSet()
+    {
+        if (!State.IsLoggedIn) Nav.NavigateTo("login", replace: true);
+    }
+
+    private void Reorder(PastOrder order)
+    {
+        State.Reorder(order);
+        Nav.NavigateTo("bestelling");
+    }
+}

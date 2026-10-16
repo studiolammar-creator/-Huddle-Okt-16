@@ -1,0 +1,136 @@
+@page "/profiel"
+@inherits StateComponent
+
+@* Mokka / Profiel 3037:247 — identity, stamp card, usual order, settings, log out. *@
+
+<PageTitle>Profiel · Mokka</PageTitle>
+
+<main class="flex flex-col gap-6 px-4 pt-14 pb-30">
+    <header class="flex items-center gap-4">
+        <span class="flex size-18 shrink-0 items-center justify-center rounded-full bg-accent text-display text-accent-foreground" aria-hidden="true">@State.Initial</span>
+        <div class="flex flex-col gap-0.5">
+            <h1 class="text-display text-foreground">@State.FirstName</h1>
+            <p class="text-caption text-muted-foreground">Vaste klant bij Mokka Groenplaats sinds maart 2026</p>
+        </div>
+    </header>
+
+    @* Stempelkaart: rotated stamps like a real card *@
+    <section class="flex flex-col gap-4 rounded-lg bg-secondary p-5 text-secondary-foreground" aria-labelledby="stempels-titel">
+        <div class="flex items-center justify-between">
+            <h2 id="stempels-titel" class="text-title">Stempelkaart</h2>
+            <p class="text-small">@State.Stamps van @AppState.StampsPerCard</p>
+        </div>
+        <ul class="grid grid-cols-5 justify-items-center gap-y-4" aria-label="@($"{State.Stamps} van {AppState.StampsPerCard} stempels")">
+            @for (var i = 0; i < AppState.StampsPerCard; i++)
+            {
+                var last = i == AppState.StampsPerCard - 1;
+                <li style="rotate: @(Rotations[i])deg" aria-hidden="true"
+                    class="flex size-13 items-center justify-center rounded-full @(i < State.Stamps ? "bg-primary text-primary-foreground" : last ? "border-[1.5px] border-dashed border-accent-foreground bg-accent text-accent-foreground" : "border-[1.5px] border-dashed border-muted-foreground bg-background")">
+                    @if (i < State.Stamps)
+                    {
+                        <Icon Name="coffee" Size="24" />
+                    }
+                    else if (last)
+                    {
+                        <Icon Name="gift" Size="22" />
+                    }
+                </li>
+            }
+        </ul>
+        <p class="text-body">@StampMessage</p>
+    </section>
+
+    @* Vaste bestelling *@
+    <section class="card flex flex-col gap-3 p-3" aria-label="Je vaste bestelling">
+        <div class="flex items-center gap-3">
+            <img src="@Favourite.Image" alt="" width="56" height="56" class="size-14 rounded-sm object-cover" />
+            <div class="flex flex-col gap-0.5">
+                <p class="text-caption text-muted-foreground">Je vaste bestelling</p>
+                <p class="text-body-strong text-card-foreground">@Favourite.Name</p>
+                <p class="text-caption text-muted-foreground">Medium, gewone melk, @Catalog.Euro(Favourite.Price)</p>
+            </div>
+        </div>
+        <button type="button" class="btn btn-primary btn-sm w-full" @onclick="Reorder">
+            <Icon Name="repeat" />
+            Bestel opnieuw
+        </button>
+    </section>
+
+    @* Instellingen *@
+    <section class="flex flex-col gap-3" aria-labelledby="instellingen-titel">
+        <h2 id="instellingen-titel" class="text-title text-foreground">Instellingen</h2>
+        <ul class="flex flex-col divide-y divide-border rounded-lg border border-border bg-card px-4">
+            <li>
+                <a href="bestellingen" class="flex items-center gap-3 py-3.5 focus-visible:outline-2 focus-visible:outline-ring">
+                    <Icon Name="receipt-text" Size="20" Class="text-primary" />
+                    <span class="flex-1 text-small text-card-foreground">Mijn bestellingen</span>
+                    <span class="text-small text-muted-foreground">@(State.OrderNumber is null ? "Geen lopende" : "1 lopend")</span>
+                </a>
+            </li>
+            <li class="flex items-center gap-3 py-3.5">
+                <Icon Name="credit-card" Size="20" Class="text-primary" />
+                <span class="flex-1 text-small text-card-foreground">Betaalmethode</span>
+                <span class="text-small text-muted-foreground">Bancontact</span>
+            </li>
+            <li class="flex items-center gap-3 py-3.5">
+                <Icon Name="map-pinned" Size="20" Class="text-primary" />
+                <span class="flex-1 text-small text-card-foreground">Favoriete zaak</span>
+                <span class="text-small text-muted-foreground">Groenplaats</span>
+            </li>
+            <li>
+                @* The whole row is the switch, so the target is 44 px+ high (accessibility audit). *@
+                <label class="flex cursor-pointer items-center gap-3 py-3.5">
+                    <Icon Name="bell" Size="20" Class="text-primary" />
+                    <span class="flex-1 text-small text-card-foreground">Seintje als je kop klaarstaat</span>
+                    <input type="checkbox" role="switch" class="peer sr-only" checked="@_notify" @onchange="() => _notify = !_notify" />
+                    <span aria-hidden="true"
+                          class="relative h-[18px] w-[33px] rounded-full transition-colors peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-ring @(_notify ? "bg-primary" : "bg-input")">
+                        <span class="absolute top-0.5 size-3.5 rounded-full bg-card shadow-xs transition-[left] @(_notify ? "left-[17px]" : "left-0.5")"></span>
+                    </span>
+                </label>
+            </li>
+            <li class="flex items-center gap-3 py-3.5">
+                <Icon Name="globe" Size="20" Class="text-primary" />
+                <span class="flex-1 text-small text-card-foreground">Taal</span>
+                <span class="text-small text-muted-foreground">Nederlands</span>
+            </li>
+        </ul>
+    </section>
+
+    <button type="button" class="btn btn-ghost self-start text-destructive hover:text-destructive" @onclick="LogOut">
+        <Icon Name="log-out" />
+        Uitloggen
+    </button>
+</main>
+
+<Tabbalk Active="profiel" />
+
+@code {
+    private static readonly Product Favourite = Catalog.Get("cappuccino");
+    private static readonly int[] Rotations = [6, -4, 3, -7, 5, -3, 7, 0, 0, 0];
+    private bool _notify = true;
+
+    private string StampMessage => (AppState.StampsPerCard - State.Stamps) switch
+    {
+        <= 0 => "Je volgende koffie is van ons.",
+        1 => "Nog 1 kop en je volgende koffie is van ons.",
+        var n => $"Nog {n} koppen en je volgende koffie is van ons.",
+    };
+
+    protected override void OnParametersSet()
+    {
+        if (!State.IsLoggedIn) Nav.NavigateTo("login", replace: true);
+    }
+
+    private void Reorder()
+    {
+        State.Add(Favourite, Size.Medium, Milk.Gewoon);
+        Nav.NavigateTo("bestelling");
+    }
+
+    private void LogOut()
+    {
+        State.LogOut();
+        Nav.NavigateTo("");
+    }
+}

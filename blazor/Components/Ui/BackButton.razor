@@ -1,0 +1,10 @@
+@* Figma: outline Icon Button with chevron-left, 44 × 44. *@
+<a href="@Href" class="icon-btn @Class" aria-label="@Label">
+    <Icon Name="chevron-left" />
+</a>
+
+@code {
+    [Parameter, EditorRequired] public string Href { get; set; } = "";
+    [Parameter] public string Label { get; set; } = "Terug";
+    [Parameter] public string? Class { get; set; }
+}

@@ -1,0 +1,161 @@
+@page "/bestelling"
+@inherits StateComponent
+
+@*
+    Mokka / Bestelling (gast) 3042:386 and Mokka / Bestelling 3035:133
+    Guests see everything except payment; "Log in om af te rekenen" opens login and returns here.
+*@
+
+<PageTitle>Je bestelling · Mokka</PageTitle>
+
+<main class="flex flex-col gap-6 pt-14 pb-40">
+    <header class="flex flex-col gap-3 px-4">
+        <BackButton Href="menu" Label="Terug naar het menu" />
+        <h1 class="text-display text-foreground">Je bestelling</h1>
+    </header>
+
+    @if (State.Cart.Count == 0)
+    {
+        <section class="flex flex-col items-start gap-4 px-4">
+            <span class="flex size-14 items-center justify-center rounded-full bg-secondary text-primary">
+                <Icon Name="shopping-bag" Size="24" />
+            </span>
+            <p class="text-body text-muted-foreground">Je bestelling is nog leeg. Kies iets lekkers in het menu.</p>
+            <a href="menu" class="btn btn-primary">Naar het menu</a>
+        </section>
+    }
+    else
+    {
+        @* Producten *@
+        <section class="flex flex-col items-start gap-3 px-4" aria-label="Producten">
+            <ul class="card flex w-full flex-col gap-4 p-4">
+                @for (var i = 0; i < State.Cart.Count; i++)
+                {
+                    var line = State.Cart[i];
+                    if (i > 0)
+                    {
+                        <li class="divider" aria-hidden="true"></li>
+                    }
+                    <li class="flex items-start gap-3">
+                        <img src="@line.Product.Image" alt="" width="56" height="56" class="size-14 shrink-0 rounded-sm object-cover" />
+                        <div class="flex min-w-0 flex-1 flex-col gap-1">
+                            <div class="flex items-start gap-2 text-card-foreground">
+                                <p class="flex-1 text-body-strong">@line.Product.Name</p>
+                                <p class="text-small">@Catalog.Euro(line.Total)</p>
+                            </div>
+                            <p class="text-caption text-muted-foreground">@line.Options</p>
+                            <div class="pt-1">
+                                <Stepper Value="line.Quantity" Label="@line.Product.Name"
+                                         OnDecrease="() => State.Decrease(line)"
+                                         OnIncrease="() => State.Increase(line)" />
+                            </div>
+                        </div>
+                    </li>
+                }
+            </ul>
+            <a href="menu" class="btn btn-ghost">
+                <Icon Name="plus" />
+                Nog iets toevoegen
+            </a>
+        </section>
+
+        @* Afhalen *@
+        <section class="flex flex-col gap-3 px-4" aria-labelledby="afhalen-titel">
+            <h2 id="afhalen-titel" class="text-title text-foreground">Afhalen</h2>
+            <div class="card flex flex-col gap-3 p-4">
+                <div class="flex items-start gap-3">
+                    <Icon Name="map-pinned" Size="20" Class="text-primary" />
+                    <div class="flex flex-col gap-0.5">
+                        <p class="text-small text-card-foreground">Mokka Groenplaats</p>
+                        <p class="text-caption text-muted-foreground">Groenplaats 12, Antwerpen. Afhalen aan de toog, rechts van de ingang.</p>
+                    </div>
+                </div>
+                <div class="divider"></div>
+                <fieldset class="flex flex-col gap-3">
+                    <legend class="mb-3 text-small text-card-foreground">Wanneer wil je afhalen?</legend>
+                    <RadioCard Group="afhalen" Title="Zo snel mogelijk" Subtitle="Klaar over ongeveer 8 minuten"
+                               Checked="State.PickupAsap" OnSelect="() => State.PickupAsap = true" />
+                    <RadioCard Group="afhalen" Title="Kies een tijdstip" Subtitle="Vandaag tussen 7:30 en 18:00"
+                               Checked="!State.PickupAsap" OnSelect="() => State.PickupAsap = false" />
+                </fieldset>
+            </div>
+        </section>
+
+        @* Opmerking *@
+        <section class="flex flex-col gap-2 px-4">
+            <label for="opmerking" class="text-small text-foreground">Opmerking voor de barista</label>
+            <input id="opmerking" class="field" placeholder="Bijvoorbeeld extra heet of zonder deksel"
+                   value="@State.Note" @oninput="e => State.Note = e.Value?.ToString() ?? string.Empty"
+                   aria-describedby="opmerking-hint" />
+            <p id="opmerking-hint" class="text-caption text-muted-foreground">Optioneel</p>
+        </section>
+
+        @* Betalen: only when logged in *@
+        if (State.IsLoggedIn)
+        {
+            <section class="flex flex-col gap-3 px-4" aria-labelledby="betalen-titel">
+                <h2 id="betalen-titel" class="text-title text-foreground">Betalen</h2>
+                <div class="card flex items-center gap-3 p-4">
+                    <Icon Name="credit-card" Size="20" Class="text-primary" />
+                    <div class="flex flex-1 flex-col gap-0.5">
+                        <p class="text-small text-card-foreground">Bancontact</p>
+                        <p class="text-caption text-muted-foreground">Kaart eindigend op 4821</p>
+                    </div>
+                    <button type="button" class="btn btn-sm text-foreground hover:bg-muted">Wijzig</button>
+                </div>
+            </section>
+        }
+
+        @* Overzicht *@
+        <section class="flex flex-col gap-3 px-4" aria-labelledby="overzicht-titel">
+            <h2 id="overzicht-titel" class="text-title text-foreground">Overzicht</h2>
+            <div class="flex justify-between text-body">
+                <span class="text-muted-foreground">Subtotaal (@State.ItemCount @(State.ItemCount == 1 ? "product" : "producten"))</span>
+                <span class="text-foreground">@Catalog.Euro(State.Total)</span>
+            </div>
+            <div class="flex justify-between text-body">
+                <span class="text-muted-foreground">Servicekost</span>
+                <span class="text-foreground">@Catalog.Euro(0)</span>
+            </div>
+            <div class="divider"></div>
+            <div class="flex justify-between text-title text-foreground">
+                <span>Totaal</span>
+                <span>@Catalog.Euro(State.Total)</span>
+            </div>
+            <div class="flex items-start gap-3 rounded-lg bg-muted p-3 text-muted-foreground">
+                <Icon Name="info" />
+                <p class="flex-1 text-caption">
+                    @(State.IsLoggedIn
+                        ? "Na betaling krijg je een bestelnummer. Toon het aan de toog en je kop wordt meteen meegegeven."
+                        : "Bij het afrekenen log je in en kies je hoe je betaalt. Je bestelling blijft bewaard.")
+                </p>
+            </div>
+        </section>
+    }
+</main>
+
+@if (State.Cart.Count > 0)
+{
+    <div class="bottom-bar bottom-0 border-t border-border pb-8">
+        <p class="flex items-center justify-center gap-2 text-caption text-muted-foreground">
+            <Icon Name="timer" />
+            @(State.PickupAsap ? "Klaar over ongeveer 8 minuten" : "Je kiest je tijdstip bij het afrekenen")
+        </p>
+        @if (State.IsLoggedIn)
+        {
+            <button type="button" class="btn btn-primary w-full" @onclick="Pay">Betaal @Catalog.Euro(State.Total)</button>
+        }
+        else
+        {
+            <a href="login?terug=afrekenen" class="btn btn-primary w-full">Log in om af te rekenen</a>
+        }
+    </div>
+}
+
+@code {
+    private void Pay()
+    {
+        State.PlaceOrder();
+        Nav.NavigateTo("bevestiging");
+    }
+}

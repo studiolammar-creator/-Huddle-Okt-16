@@ -1,0 +1,92 @@
+@page "/bevestiging"
+@inherits StateComponent
+
+@* Mokka / Bevestiging 3036:194 — pickup ticket with order number and status. *@
+
+<PageTitle>Bestelling @Number · Mokka</PageTitle>
+
+<main class="flex min-h-dvh flex-col gap-6 px-4 pt-14 pb-8">
+    <header class="flex flex-col gap-1">
+        <h1 class="text-display text-foreground">Bedankt, @(State.FirstName).</h1>
+        <p class="text-body text-muted-foreground">Je betaling is gelukt. We zijn aan je koffie begonnen.</p>
+    </header>
+
+    @* Afhaalbon *@
+    <section class="overflow-hidden rounded-lg bg-primary text-primary-foreground" aria-label="Afhaalbon">
+        <div class="flex flex-col gap-1 px-6 pt-6 pb-5">
+            <p class="text-small opacity-80">Je bestelnummer</p>
+            <p class="font-display text-[96px] leading-[104px] font-semibold tracking-[-0.02em] [font-variation-settings:'SOFT'_0,'WONK'_1]">@Number</p>
+            <p class="text-body">Toon dit nummer aan de toog.</p>
+        </div>
+        <div class="relative h-6" aria-hidden="true">
+            <div class="absolute inset-x-6 top-1/2 border-t-[1.5px] border-dashed border-primary-foreground/40"></div>
+            <div class="absolute top-0 -left-3 size-6 rounded-full bg-background"></div>
+            <div class="absolute top-0 -right-3 size-6 rounded-full bg-background"></div>
+        </div>
+        <dl class="flex gap-4 px-6 pt-4 pb-6">
+            <div class="flex flex-1 flex-col gap-0.5">
+                <dt class="text-caption opacity-80">Afhalen bij</dt>
+                <dd class="text-small">Mokka Groenplaats</dd>
+            </div>
+            <div class="flex flex-1 flex-col gap-0.5">
+                <dt class="text-caption opacity-80">Klaar</dt>
+                <dd class="text-small">Over ongeveer 8 min</dd>
+            </div>
+        </dl>
+    </section>
+
+    @* Status *@
+    <section aria-labelledby="status-titel">
+        <h2 id="status-titel" class="mb-3 text-title text-foreground">Status</h2>
+        <ol>
+            <li class="flex gap-3">
+                <div class="flex flex-col items-center">
+                    <span class="flex size-9 items-center justify-center rounded-full bg-primary text-primary-foreground"><Icon Name="check" Size="18" /></span>
+                    <span class="w-0.5 flex-1 bg-primary"></span>
+                </div>
+                <div class="flex flex-1 flex-col gap-0.5 pt-1.5 pb-5">
+                    <p class="text-body text-foreground">Ontvangen</p>
+                    <p class="text-caption text-muted-foreground">Betaald met Bancontact, @Catalog.Euro(Total)</p>
+                </div>
+            </li>
+            <li class="flex gap-3" aria-current="step">
+                <div class="flex flex-col items-center">
+                    <span class="flex size-9 items-center justify-center rounded-full bg-accent text-accent-foreground"><Icon Name="chef-hat" Size="18" /></span>
+                    <span class="w-0.5 flex-1 bg-border"></span>
+                </div>
+                <div class="flex flex-1 flex-col gap-0.5 pt-1.5 pb-5">
+                    <p class="text-body-strong text-foreground">In de maak</p>
+                    <p class="text-caption text-muted-foreground">Je barista zet je @Items.</p>
+                </div>
+            </li>
+            <li class="flex gap-3">
+                <div class="flex flex-col items-center">
+                    <span class="flex size-9 items-center justify-center rounded-full bg-muted text-muted-foreground"><Icon Name="hand-platter" Size="18" /></span>
+                </div>
+                <div class="flex flex-1 flex-col gap-0.5 pt-1.5 text-muted-foreground">
+                    <p class="text-body">Klaar aan de toog</p>
+                    <p class="text-caption">Je krijgt een seintje zodra je kop klaarstaat.</p>
+                </div>
+            </li>
+        </ol>
+    </section>
+
+    <div class="flex-1"></div>
+    <a href="" class="btn btn-outline w-full">Terug naar home</a>
+</main>
+
+@code {
+    // Fallbacks keep the screen readable when it is opened directly (as in the Figma prototype).
+    private string Number => State.OrderNumber ?? "A27";
+    private decimal Total => State.PlacedOrder.Count > 0 ? State.PlacedTotal : 7.00m;
+
+    private string Items
+    {
+        get
+        {
+            var names = State.PlacedOrder.Select(l => l.Product.Name.ToLowerInvariant()).Distinct().ToList();
+            if (names.Count == 0) return "cappuccino en flat white";
+            return names.Count == 1 ? names[0] : $"{string.Join(", ", names.Take(names.Count - 1))} en {names[^1]}";
+        }
+    }
+}

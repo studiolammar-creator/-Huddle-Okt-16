@@ -1,0 +1,28 @@
+@* Figma: shadcn "Rich Radio Group" item. Used for milk choice and pickup moment.
+   Native radio input, so arrow keys and screen readers work as expected. *@
+<label class="flex cursor-pointer items-start gap-3 rounded-[10px] border bg-card p-3 transition-colors has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-ring @(Checked ? "border-primary" : "border-border hover:bg-muted/50")">
+    <input type="radio" name="@Group" value="@Title" checked="@Checked" class="peer sr-only"
+           @onchange="() => OnSelect.InvokeAsync()" />
+    <span aria-hidden="true"
+          class="mt-0.5 flex size-4 shrink-0 items-center justify-center rounded-full border @(Checked ? "border-primary" : "border-input")">
+        @if (Checked)
+        {
+            <span class="size-2 rounded-full bg-primary"></span>
+        }
+    </span>
+    <span class="flex min-w-0 flex-1 flex-col gap-1.5">
+        <span class="text-small font-normal text-foreground">@Title</span>
+        @if (Subtitle is not null)
+        {
+            <span class="text-caption text-muted-foreground">@Subtitle</span>
+        }
+    </span>
+</label>
+
+@code {
+    [Parameter, EditorRequired] public string Group { get; set; } = "";
+    [Parameter, EditorRequired] public string Title { get; set; } = "";
+    [Parameter] public string? Subtitle { get; set; }
+    [Parameter] public bool Checked { get; set; }
+    [Parameter] public EventCallback OnSelect { get; set; }
+}

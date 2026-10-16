@@ -1,9 +1,13 @@
 using Mokka.Components;
+using Mokka.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+// One AppState per browser session (Blazor circuit): login, order and toast.
+builder.Services.AddScoped<AppState>();
 
 var app = builder.Build();
 
